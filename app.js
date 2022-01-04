@@ -18,7 +18,11 @@ app.post("/register", async (req, res) => {
 
     // Validate user input
     if (!(email && password && first_name && last_name)) {
-      res.status(400).send("All input is required");
+      res.status(400).send({
+        success: false,
+        code: 400,
+        message: "All input is required",
+      });
     }
 
     // check if user already exist
@@ -26,7 +30,11 @@ app.post("/register", async (req, res) => {
     const oldUser = await User.findOne({ email });
 
     if (oldUser) {
-      return res.status(409).send("User Already Exist. Please Login");
+      return res.status(409).send({
+        success: false,
+        code: 409,
+        message: "User Already Exist. Please Login",
+      });
     }
 
     //Encrypt user password
@@ -65,7 +73,11 @@ app.post("/login", async (req, res) => {
 
     // Validate user input
     if (!(email && password)) {
-      res.status(400).send("All input is required");
+      res.status(400).send({
+        success: false,
+        code: 400,
+        message: "All input is required",
+      });
     }
     // Validate if user exist in our database
     const user = await User.findOne({ email });
@@ -86,25 +98,30 @@ app.post("/login", async (req, res) => {
       // user
       res.status(200).json(user);
     }
-    res.status(400).send("Invalid Credentials");
+    res.status(400).send({
+      success: false,
+      code: 400,
+      message: "Invalid Credentials",
+    });
   } catch (err) {
     console.log(err);
   }
 });
 
 app.get("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
+  res.status(200).send({
+    success: true,
+    code: 200,
+    message: "Welcome 🙌",
+  });
 });
 
 // This should be the last route else any after it won't work
 app.use("*", (req, res) => {
   res.status(404).json({
-    success: "false",
-    message: "Page not found",
-    error: {
-      statusCode: 404,
-      message: "You reached a route that is not defined on this server",
-    },
+    success: false,
+    code: 404,
+    message: "You reached a route that is not defined on this server",
   });
 });
 
